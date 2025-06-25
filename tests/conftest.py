@@ -4,9 +4,6 @@ import time
 from curl import Url
 
 
-
-
-
 @pytest.fixture(scope='function')
 def user_data():
     """Генерирует уникальные данные пользователя с временной меткой"""

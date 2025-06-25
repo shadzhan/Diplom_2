@@ -2,7 +2,7 @@ import pytest
 import requests
 import allure
 from curl import Url
-
+from messages import AuthMessages, GeneralMessages
 
 
 @allure.feature("Авторизация пользователя")
@@ -16,8 +16,11 @@ class TestUserLogin:
         }
         response = requests.post(f"{Url.BASE_URL}{Url.AUTH_URL}", json=login_data)
 
-        assert response.status_code == 200
-        assert response.json().get("success") is True
+        assert response.status_code == 200 , (
+            f"Ожидался статус 200, получен {response.status_code}")
+
+        assert response.json().get("success") == GeneralMessages.SUCCESS_TRUE, (
+            f"Ожидалось success={GeneralMessages.SUCCESS_TRUE}")
         assert "accessToken" in response.json()
 
     @allure.title("Логин с неверными учетными данными")
@@ -28,6 +31,11 @@ class TestUserLogin:
         }
         response = requests.post(f"{Url.BASE_URL}{Url.AUTH_URL}", json=login_data)
 
-        assert response.status_code == 401
-        assert response.json().get("success") is False
-        assert "email or password are incorrect" in response.json().get("message")
+        assert response.status_code == 401 , (
+            f"Ожидался статус 401, получен {response.status_code}")
+        response_json = response.json()
+        assert response_json.get("success") == GeneralMessages.SUCCESS_FALSE, (
+            f"Ожидалось success={GeneralMessages.SUCCESS_FALSE}")
+        assert AuthMessages.INVALID_CREDENTIALS in response_json.get("message", ""), (
+            f"Ожидалось сообщение содержащее '{AuthMessages.INVALID_CREDENTIALS}', "
+            f"получено '{response_json.get('message')}'")
