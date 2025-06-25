@@ -13,6 +13,7 @@ your_project/
 ├── conftest.py               # Фикстуры pytest (в корне)
 ├── data.py                   # Тестовые данные
 ├── generators.py             # Генератор данных
+├── messages.py               # Модуль сообщений от сервера
 ├── curl.py                   # Файл с URL
 ├── methods/                  # Методы
 ├── create_order.py           # Методы для создания заказа

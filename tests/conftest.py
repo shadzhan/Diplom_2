@@ -1,13 +1,10 @@
 import pytest
 import requests
 import time
-from faker import Faker
 from curl import Url
-from generators import generate_user_data, generate_order_body
 
 
 
-faker = Faker()
 
 
 @pytest.fixture(scope='function')
@@ -20,10 +17,6 @@ def user_data():
         "password": f"Password_{timestamp}"
     }
 
-@pytest.fixture(autouse=True)
-def wait_between_tests():
-    yield
-    time.sleep(0.5)
 
 @pytest.fixture(scope='function')
 def registered_user(user_data):
@@ -68,32 +61,6 @@ def available_ingredients():
     response = requests.get(f"{Url.BASE_URL}{Url.INGREDIENTS_URL}")
     assert response.status_code == 200
     return response.json()["data"]
-
-
-@pytest.fixture
-def create_order(get_ingredients, auth_user):
-    def _create_order(auth=True, ingredients=None, valid=True, count=2):
-        if ingredients is None:
-            if valid:
-                ingredients = [ingredient["_id"] for ingredient in get_ingredients[:count]]
-            else:
-                ingredients = [f"invalid_{i}" for i in range(count)]
-
-        payload = {"ingredients": ingredients}
-
-        headers = {}
-        if auth:
-            _, token = auth_user
-            headers = {"Authorization": token}
-
-        return requests.post(
-            f"{Url.BASE_URL}{Url.ORDER_URL}",
-            json=payload,
-            headers=headers,
-            timeout=10
-        )
-
-    return _create_order
 
 
 @pytest.fixture
